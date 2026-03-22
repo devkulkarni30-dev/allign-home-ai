@@ -1,0 +1,8 @@
+{
+  "name": "AlignHome AI",
+  "description": "The ultimate AI Vastu app for modern homeowners. Perform instant floor plan scans, live camera audits, and get architectural compliance reports with Vedic precision.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}

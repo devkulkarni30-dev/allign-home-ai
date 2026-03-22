@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlignHome.ai | Best AI Vastu App with Live Camera & Floor Plan Scanner</title>
+    <meta name="description" content="Get an instant Vastu compliance report for your home with AlignHome.ai. The #1 AI Vastu checker for north-facing house tips, kitchen placement, and apartment remedies.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        .font-serif {
+            font-family: 'Cinzel', serif;
+        }
+        @keyframes radar {
+            0% { top: 0; opacity: 0; transform: scaleY(1); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; transform: scaleY(0.5); }
+        }
+        .scan-line {
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.1), transparent);
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            animation: radar 3s ease-in-out infinite;
+            border-top: 1px solid rgba(59, 130, 246, 0.8);
+            pointer-events: none;
+        }
+        .scan-grid {
+            background-image: linear-gradient(to right, rgba(30, 41, 59, 0.5) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+            background-size: 30px 30px;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.2;
+        }
+        @keyframes pulse-grid {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.4; }
+        }
+        .scan-grid-active {
+            animation: pulse-grid 2s ease-in-out infinite;
+        }
+        @keyframes scan-move {
+            0% { transform: translateY(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+        .animate-scan-line {
+            animation: scan-move 4s linear infinite;
+        }
+        @keyframes ping-node {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .node-pulse {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #10b981;
+            animation: ping-node 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes corner-bracket {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .corner-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-color: #10b981;
+            opacity: 0.8;
+            animation: corner-bracket 1.5s ease-in-out infinite;
+        }
+        .corner-tl { top: 20px; left: 20px; border-top-width: 2px; border-left-width: 2px; }
+        .corner-tr { top: 20px; right: 20px; border-top-width: 2px; border-right-width: 2px; }
+        .corner-bl { bottom: 20px; left: 20px; border-bottom-width: 2px; border-left-width: 2px; }
+        .corner-br { bottom: 20px; right: 20px; border-bottom-width: 2px; border-right-width: 2px; }
+
+        @keyframes boundary-trace {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        .boundary-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: boundary-trace 10s linear infinite;
+        }
+
+        .vastu-chakra {
+            pointer-events: none;
+            opacity: 0.4;
+            mix-blend-mode: overlay;
+        }
+        
+        /* Ad Slot Placeholders */
+        .ad-container {
+            background: #1e293b;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            border: 1px dashed #334155;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        .ad-label {
+            position: absolute;
+            top: -0.75rem;
+            left: 1rem;
+            background: #0f172a;
+            padding: 0 0.5rem;
+            font-size: 0.65rem;
+            color: #64748b;
+            letter-spacing: 0.1em;
+        }
+
+        /* PRINT STYLES - Optimized for High Quality PDF Export */
+        @media print {
+            body {
+                background-color: white !important;
+                color: #0f172a !important;
+            }
+            header, footer, .no-print, .ad-container, .scan-line {
+                display: none !important;
+            }
+            main {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .rounded-[3rem], .rounded-[3.5rem], .rounded-2xl {
+                border-radius: 0.75rem !important; /* Smaller radius for cleaner print */
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: none !important;
+            }
+            .bg-slate-900, .bg-slate-950, .bg-slate-900/40 {
+                background-color: #f8fafc !important; /* Very light gray for structure */
+            }
+            .border-slate-800, .border-emerald-500/30 {
+                border-color: #cbd5e1 !important;
+            }
+            .text-white, .text-slate-100 {
+                color: #0f172a !important;
+            }
+            .text-emerald-400 { color: #059669 !important; font-weight: bold; }
+            .text-amber-400 { color: #d97706 !important; font-weight: bold; }
+            .text-rose-400 { color: #dc2626 !important; font-weight: bold; }
+            .print-break-inside-avoid {
+                break-inside: avoid;
+            }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "three": "https://esm.sh/three@0.170.0",
+    "three/examples/jsm/loaders/GLTFLoader": "https://esm.sh/three@0.170.0/examples/jsm/loaders/GLTFLoader",
+    "three/examples/jsm/loaders/OBJLoader": "https://esm.sh/three@0.170.0/examples/jsm/loaders/OBJLoader",
+    "three/examples/jsm/controls/OrbitControls": "https://esm.sh/three@0.170.0/examples/jsm/controls/OrbitControls",
+    "three/": "https://esm.sh/three@^0.182.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
