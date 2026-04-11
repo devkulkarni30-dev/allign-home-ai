@@ -18,10 +18,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20   # ✅ upgrade (important)
+          cache: 'npm'       # ✅ faster + stable installs
 
-      - run: npm install
-      - run: npm run build
+      # ✅ Clean install to fix Rollup native issue
+      - name: Clean install dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
+          npm install
+
+      - name: Build project
+        run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
