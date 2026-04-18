@@ -6,10 +6,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
-      base: '/allign-home-ai/',   // 🔥 FORCE THIS
       server: {
         port: 3000,
-        host: '0.0.0.0',
+        host: true,
         allowedHosts: 'all'
       },
       plugins: [
